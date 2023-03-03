@@ -1,0 +1,55 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// ? samuelx
+
+//@version=5
+indicator(title = "Pinbar", shorttitle = "Pinbar", overlay = true)
+
+
+
+shuliang = input.int(1, title="数量")
+LOOKBACK = shuliang
+highest = ta.highest(LOOKBACK)
+lowest = ta.lowest(LOOKBACK)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+body = math.abs(close - open)   //abs为返回绝对值 
+upshadow = open > close ? (high - open) : (high - close)
+downshadow = open > close ? (close - low) : (open - low)
+
+pinbar_h = close[2] > open[2] ? (close[1] > open[1] ? (body[1] > body ? (upshadow > 0.66 * (high - low) ? 1 : 0) : 0) : 0) : 0
+pinbar_l = open[2] > close[2] ? (open[1] > close[1] ? (body[1] > body ? (downshadow > 0.66 * (high - low) ? 1 : 0) : 0) : 0) : 0
+ //yujing = pinbar_h or pinbar_l
+//在图表上绘制出Pinbar信号点
+plotshape(pinbar_h, style = shape.triangledown, color = color.red)
+plotshape(pinbar_l, style = shape.triangleup, color = color.lime, location = location.belowbar)
+//在图表上绘制出Pinbar的说明文字
+plotchar(pinbar_h, text = "熊市 Pinbar", char = "", color = color.red)
+plotchar(pinbar_l, text = "牛市 Pinbar", char = "", color = color.lime, location = location.belowbar)
+bi=(high-close)*2
+
+
+
+zhang = if pinbar_h
+    color.red
+else 
+    color.new(#787B86, 100)
+
+die = if pinbar_l
+    color.red
+else 
+    color.new(#787B86, 100)
+
+
+lineTop = line.new(bar_index[LOOKBACK], highest, bar_index, highest,width = 5)
+lineBottom = line.new(bar_index[LOOKBACK], highest, bar_index, highest,width = 5)
+line.set_y1(lineBottom, high)
+line.set_y2(lineBottom, high)
+// line.set_color(lineBottom, color = zhang)
+	
+line.set_y1(lineTop, low-bi)
+line.set_y2(lineTop, low-bi)
+//line.set_color(lineBottom, color = zhang)
+
+
+
+// hline(, title='Pi', color=color.blue, linestyle=hline.style_dotted, linewidth=2)
